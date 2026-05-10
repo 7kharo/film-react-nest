@@ -1,4 +1,5 @@
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { TicketDto } from '../dto/order.dto';
 
 @Entity('orders')
 export class Order {
@@ -12,5 +13,5 @@ export class Order {
     phone: string;
 
     @Column('jsonb')
-    tickets: any[];
+    tickets: TicketDto[];
 }
