@@ -12,8 +12,11 @@ export class PostgresFilmRepository implements IFilmRepository {
     private scheduleRepository: Repository<Schedule>,
   ) {}
 
-  async getFilms(): Promise<FilmsDto[]> {
-    const films = await this.filmRepository.find();
+  async getFilms(limit = 100, offset = 0): Promise<FilmsDto[]> {
+    const films = await this.filmRepository.find({
+      take: limit,
+      skip: offset,
+    });
     return films.map(({ schedule, tags, ...film }) => ({
       ...film,
       tags: tags.split(',').filter(Boolean),
