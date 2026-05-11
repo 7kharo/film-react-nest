@@ -3,15 +3,15 @@ import { TicketDto } from '../dto/order.dto';
 
 @Entity('orders')
 export class Order {
-    @PrimaryGeneratedColumn('uuid')
-    id: string;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
-    @Column()
-    email: string;
+  @Column()
+  email: string;
 
-    @Column()
-    phone: string;
+  @Column()
+  phone: string;
 
-    @Column('jsonb')
-    tickets: TicketDto[];
+  @Column('jsonb')
+  tickets: TicketDto[];
 }

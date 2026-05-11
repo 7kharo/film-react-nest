@@ -1,5 +1,5 @@
-import { Column, Entity, OneToMany, PrimaryColumn } from "typeorm";
-import { Schedule } from "./schedule.entity";
+import { Column, Entity, OneToMany, PrimaryColumn } from 'typeorm';
+import { Schedule } from './schedule.entity';
 
 @Entity('films')
 export class Film {

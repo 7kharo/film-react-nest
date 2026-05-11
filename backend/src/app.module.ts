@@ -18,27 +18,27 @@ import { Order } from './order/entities/order.entity';
 import { PostgresOrderRepository } from './repository/postgres-order.repository';
 
 @Module({
-    imports: [
-        ConfigModule.forRoot({ isGlobal: true, cache: true }),
-        TypeOrmModule.forRoot({
-            type: 'postgres',
-            url: process.env.DATABASE_URL,
-            entities: [Film, Schedule, Order],
-            synchronize: false,
-        }),
-        TypeOrmModule.forFeature([Film, Schedule, Order]),
-        ServeStaticModule.forRoot({
-            rootPath: path.join(__dirname, '..', 'public', 'content', 'afisha'),
-            serveRoot: '/content/afisha',
-        }),
-    ],
-    controllers: [FilmsController, OrderController],
-    providers: [
-        configProvider,
-        FilmsService,
-        OrderService,
-        { provide: FILM_REPOSITORY, useClass: PostgresFilmRepository },  // пока InMemory
-        { provide: ORDER_REPOSITORY, useClass: PostgresOrderRepository },  // пока InMemory
-    ],
+  imports: [
+    ConfigModule.forRoot({ isGlobal: true, cache: true }),
+    TypeOrmModule.forRoot({
+      type: 'postgres',
+      url: process.env.DATABASE_URL,
+      entities: [Film, Schedule, Order],
+      synchronize: false,
+    }),
+    TypeOrmModule.forFeature([Film, Schedule, Order]),
+    ServeStaticModule.forRoot({
+      rootPath: path.join(__dirname, '..', 'public', 'content', 'afisha'),
+      serveRoot: '/content/afisha',
+    }),
+  ],
+  controllers: [FilmsController, OrderController],
+  providers: [
+    configProvider,
+    FilmsService,
+    OrderService,
+    { provide: FILM_REPOSITORY, useClass: PostgresFilmRepository }, // пока InMemory
+    { provide: ORDER_REPOSITORY, useClass: PostgresOrderRepository }, // пока InMemory
+  ],
 })
 export class AppModule {}
