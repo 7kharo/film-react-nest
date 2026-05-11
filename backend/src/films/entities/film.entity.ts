@@ -6,7 +6,7 @@ export class Film {
   @PrimaryColumn('uuid') id: string;
   @Column('float') rating: number;
   @Column() director: string;
-  @Column('text') tags: string;
+  @Column('text', { array: true }) tags: string[];
   @Column() title: string;
   @Column() about: string;
   @Column() description: string;

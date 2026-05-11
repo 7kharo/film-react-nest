@@ -19,7 +19,7 @@ export class PostgresFilmRepository implements IFilmRepository {
     });
     return films.map(({ schedule, tags, ...film }) => ({
       ...film,
-      tags: tags.split(',').filter(Boolean),
+      tags: tags,
     }));
   }
 
@@ -28,7 +28,7 @@ export class PostgresFilmRepository implements IFilmRepository {
     if (!film) return null;
     return {
       ...film,
-      tags: film.tags.split(',').filter(Boolean),
+      tags: film.tags,
     };
   }
 
@@ -36,8 +36,8 @@ export class PostgresFilmRepository implements IFilmRepository {
     const sessions = await this.scheduleRepository.find({ where: { filmId } });
     return sessions.map((s) => ({
       ...s,
-      film: s.filmId, // добавить строковое поле
-      taken: s.taken ? s.taken.split(',').filter(Boolean) : [],
+      film: s.filmId,
+      taken: s.taken || [],
     }));
   }
 
@@ -50,12 +50,7 @@ export class PostgresFilmRepository implements IFilmRepository {
     const session = await this.scheduleRepository.findOne({
       where: { id: sessionId, filmId },
     });
-    const newTaken = session.taken
-      ? session.taken + `,${row}:${seat}`
-      : `${row}:${seat}`;
-    await this.scheduleRepository.update(
-      { id: sessionId, filmId },
-      { taken: newTaken },
-    );
+    session.taken.push(`${row}:${seat}`);
+    await this.scheduleRepository.save(session);
   }
 }

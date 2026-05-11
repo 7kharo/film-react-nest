@@ -21,8 +21,12 @@ import { PostgresOrderRepository } from './repository/postgres-order.repository'
   imports: [
     ConfigModule.forRoot({ isGlobal: true, cache: true }),
     TypeOrmModule.forRoot({
-      type: 'postgres',
-      url: process.env.DATABASE_URL,
+      type: process.env.DATABASE_DRIVER as 'postgres',
+      host: process.env.DATABASE_HOST,
+      port: parseInt(process.env.DATABASE_PORT, 10),
+      username: process.env.DATABASE_USERNAME,
+      password: process.env.DATABASE_PASSWORD,
+      database: process.env.DATABASE_NAME,
       entities: [Film, Schedule, Order],
       synchronize: false,
     }),

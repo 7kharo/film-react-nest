@@ -9,7 +9,7 @@ export class Schedule {
   @Column('int') rows: number;
   @Column('int') seats: number;
   @Column('float') price: number;
-  @Column('text') taken: string;
+  @Column('text', { array: true }) taken: string[];
   @Column('uuid') filmId: string;
   @ManyToOne(() => Film, (film) => film.schedule)
   @JoinColumn({ name: 'filmId' })
