@@ -2,44 +2,47 @@ import { Module } from '@nestjs/common';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { ConfigModule } from '@nestjs/config';
 import * as path from 'node:path';
+import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { configProvider } from './app.config.provider';
 import { FilmsController } from './films/films.controller';
 import { OrderController } from './order/order.controller';
 import { FilmsService } from './films/films.service';
 import { OrderService } from './order/order.service';
-import { MongooseModule } from '@nestjs/mongoose';
-import { Films, filmsSchema } from './films/schemas/film.schema';
 import { FILM_REPOSITORY } from './repository/film.repository';
 import { ORDER_REPOSITORY } from './repository/order.repository';
-import { MongoFilmRepository } from './repository/mongo-film.repository';
-import { MongoOrderRepository } from './repository/mongo-order.repository';
-import { Order, orderSchema } from './order/schemas/order.schema';
+import { Film } from './films/entities/film.entity';
+import { Schedule } from './films/entities/schedule.entity';
+import { PostgresFilmRepository } from './repository/postgres-film.repository';
+import { Order } from './order/entities/order.entity';
+import { PostgresOrderRepository } from './repository/postgres-order.repository';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({
-      isGlobal: true,
-      cache: true,
+    ConfigModule.forRoot({ isGlobal: true, cache: true }),
+    TypeOrmModule.forRoot({
+      type: process.env.DATABASE_DRIVER as 'postgres',
+      host: process.env.DATABASE_HOST,
+      port: parseInt(process.env.DATABASE_PORT, 10),
+      username: process.env.DATABASE_USERNAME,
+      password: process.env.DATABASE_PASSWORD,
+      database: process.env.DATABASE_NAME,
+      entities: [Film, Schedule, Order],
+      synchronize: false,
     }),
-    MongooseModule.forRoot(process.env.DATABASE_URL),
-    MongooseModule.forFeature([
-      { name: Films.name, schema: filmsSchema },
-      { name: Order.name, schema: orderSchema },
-    ]),
+    TypeOrmModule.forFeature([Film, Schedule, Order]),
     ServeStaticModule.forRoot({
       rootPath: path.join(__dirname, '..', 'public', 'content', 'afisha'),
       serveRoot: '/content/afisha',
     }),
-    // @todo: Добавьте раздачу статических файлов из public
   ],
   controllers: [FilmsController, OrderController],
   providers: [
     configProvider,
     FilmsService,
     OrderService,
-    { provide: FILM_REPOSITORY, useClass: MongoFilmRepository },
-    { provide: ORDER_REPOSITORY, useClass: MongoOrderRepository },
+    { provide: FILM_REPOSITORY, useClass: PostgresFilmRepository }, // пока InMemory
+    { provide: ORDER_REPOSITORY, useClass: PostgresOrderRepository }, // пока InMemory
   ],
 })
 export class AppModule {}

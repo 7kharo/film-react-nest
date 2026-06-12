@@ -8,6 +8,7 @@ import {
   FILM_REPOSITORY,
   IFilmRepository,
 } from 'src/repository/film.repository';
+import { SessionDto } from 'src/films/dto/films.dto';
 
 @Injectable()
 export class OrderService {
@@ -17,10 +18,26 @@ export class OrderService {
     @Inject(FILM_REPOSITORY) private readonly filmRepository: IFilmRepository,
   ) {}
   async createOrder(dto: OrderDto) {
+    const filmIds = [...new Set(dto.tickets.map((ticket) => ticket.film))];
+    const scheduleCache = new Map<string, SessionDto[]>();
+    for (const filmId of filmIds) {
+      try {
+        scheduleCache.set(
+          filmId,
+          await this.filmRepository.getIdSchedule(filmId),
+        );
+      } catch {
+        throw new BadRequestException({
+          message: 'Ошибка запроса к базе данных',
+        });
+      }
+    }
+
     for (const ticket of dto.tickets) {
-      const currentSession = (
-        await this.filmRepository.getIdSchedule(ticket.film)
-      ).find((sched) => sched.id === ticket.session);
+      const sessions = scheduleCache.get(ticket.film);
+      const currentSession = sessions.find(
+        (sched) => sched.id === ticket.session,
+      );
       const rowSeat = `${ticket.row}:${ticket.seat}`;
       if (currentSession.taken.includes(rowSeat)) {
         throw new BadRequestException({
