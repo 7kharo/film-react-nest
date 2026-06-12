@@ -1,5 +1,10 @@
 # FILM!
 
+Проект можно посмотреть по ссылке:
+film-react-nest-kh.nomorepartiessite.ru
+
+
+
 ## Установка
 
 ### MongoDB

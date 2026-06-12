@@ -1,0 +1,12 @@
+node_modules
+dist
+.env
+.git
+.gitignore
+*.log
+.DS_Store
+coverage
+src/stories
+*.stories.tsx
+*.spec.tsx
+storybook-static
