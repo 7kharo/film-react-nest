@@ -21,6 +21,9 @@ jobs:
           - context: ./frontend
             image: sp16_frontend
             dockerfile: ./frontend/Dockerfile
+            args: |
+              VITE_API_URL=/api/afisha
+              VITE_CDN_URL=/content/afisha
           - context: ./nginx
             image: sp16_server
             dockerfile: ./nginx/Dockerfile
@@ -45,3 +48,4 @@ jobs:
           file: ${{ matrix.dockerfile }}
           push: true
           tags: ghcr.io/${{ github.repository_owner }}/${{ matrix.image }}:latest
+          build-args: ${{ matrix.args }}
