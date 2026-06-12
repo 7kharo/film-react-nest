@@ -12,6 +12,9 @@ services:
       DB_NAME: ${DB_NAME}
     volumes:
       - db_data:/var/lib/postgresql/data
+      - ./backend/sql/prac.init.sql:/docker-entrypoint-initdb.d/01-init.sql:ro
+      - ./backend/sql/prac.films.sql:/docker-entrypoint-initdb.d/02-films.sql:ro
+      - ./backend/sql/prac.schedules.sql:/docker-entrypoint-initdb.d/03-schedules.sql:ro
     ports:
       - '5432:5432'
     networks:
