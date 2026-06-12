@@ -1,0 +1,97 @@
+services:
+  database:
+    image: postgres:16.4
+    container_name: film_database
+    restart: always
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_NAME: ${DB_NAME}
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    ports:
+      - '5432:5432'
+    networks:
+      - internal
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-postgres}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    image: 'ghcr.io/${OWNER}/sp16_backend:latest'
+    container_name: film_backend
+    restart: always
+    environment:
+      NODE_ENV: production
+      LOG_FORMAT: json
+      DATABASE_DRIVER: postgres
+      DATABASE_HOST: database
+      DATABASE_PORT: 5432
+      DATABASE_USERNAME: ${DB_USER}
+      DATABASE_PASSWORD: ${DB_PASSWORD}
+      DATABASE_NAME: ${DB_NAME}
+    ports:
+      - '3000:3000'
+    networks:
+      - internal
+    depends_on:
+      database:
+        condition: service_healthy
+
+  frontend:
+    image: 'ghcr.io/${OWNER}/sp16_frontend:latest'
+    container_name: film_frontend_builder
+    environment:
+      VITE_API_URL: /api/afisha
+      VITE_CDN_URL: /content/afisha
+    volumes:
+      - frontend_build:/dist
+    networks:
+      - internal
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin4_container
+    restart: always
+    ports:
+      - '8080:80'
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
+    networks:
+      - internal
+    depends_on:
+      - database
+
+  server:
+    image: 'ghcr.io/${OWNER}/sp16_server:latest'
+    container_name: film_nginx
+    restart: always
+    ports:
+      - '80:80'
+    volumes:
+      - frontend_build:/var/www
+    depends_on:
+      - frontend
+      - backend
+    networks:
+      - internal
+
+networks:
+  internal:
+    driver: bridge
+
+volumes:
+  db_data:
+    name: film_db_data
+  pgadmin-data:
+    name: film_pgadmin_data
+  frontend_build:
+    name: film_frontend_build
