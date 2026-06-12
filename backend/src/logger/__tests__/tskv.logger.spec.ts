@@ -17,7 +17,9 @@ describe('TskvLogger', () => {
     it('should escape newlines, tabs, carriage returns', () => {
       expect(logger.escapeValue('line1\nline2')).toBe('line1 line2');
       expect(logger.escapeValue('col1\tcol2')).toBe('col1 col2');
-      expect(logger.escapeValue('text\r\nwith\r\nnewlines')).toBe('text with newlines');
+      expect(logger.escapeValue('text\r\nwith\r\nnewlines')).toBe(
+        'text with newlines',
+      );
     });
 
     it('should collapse multiple spaces', () => {

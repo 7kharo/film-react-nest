@@ -1,7 +1,13 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { OrderService } from './order.service';
-import { ORDER_REPOSITORY, IOrderRepository } from '../repository/order.repository';
-import { FILM_REPOSITORY, IFilmRepository } from '../repository/film.repository';
+import {
+  ORDER_REPOSITORY,
+  IOrderRepository,
+} from '../repository/order.repository';
+import {
+  FILM_REPOSITORY,
+  IFilmRepository,
+} from '../repository/film.repository';
 
 describe('OrderService', () => {
   let service: OrderService;
@@ -95,7 +101,12 @@ describe('OrderService', () => {
       expect(result.total).toBe(1);
       expect(result.items).toEqual(mockOrderResult);
       expect(mockFilmRepository.getIdSchedule).toHaveBeenCalledWith('film-1');
-      expect(mockFilmRepository.addTakenPlace).toHaveBeenCalledWith('film-1', 'session-1', 5, 10);
+      expect(mockFilmRepository.addTakenPlace).toHaveBeenCalledWith(
+        'film-1',
+        'session-1',
+        5,
+        10,
+      );
       expect(mockOrderRepository.createOrder).toHaveBeenCalledWith(orderDto);
     });
 

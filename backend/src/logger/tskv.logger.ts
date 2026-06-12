@@ -2,30 +2,35 @@ import { Injectable, LoggerService } from '@nestjs/common';
 
 @Injectable()
 export class TskvLogger implements LoggerService {
-  escapeValue(value: any): string {
+  escapeValue(value: unknown): string {
     if (value === null || value === undefined) {
       return '';
     }
 
     if (typeof value === 'object') {
       try {
-        value = JSON.stringify(value);
+        return JSON.stringify(value).replace(/[\n\r\t]/g, ' ').replace(/\s+/g, ' ').trim();
       } catch {
-        value = String(value);
+        return String(value).replace(/[\n\r\t]/g, ' ').replace(/\s+/g, ' ').trim();
       }
     }
 
-    let str = String(value);
-    str = str.replace(/[\n\r\t]/g, ' ');
-    str = str.replace(/\s+/g, ' ').trim();
-    return str;
+    // Для всех остальных типов (string, number, boolean, etc.)
+    return String(value).replace(/[\n\r\t]/g, ' ').replace(/\s+/g, ' ').trim();
   }
 
-  formatMessage(level: string, message: any, context?: string, stack?: string): string {
+  formatMessage(
+    level: string,
+    message: string | object,
+    context?: string,
+    stack?: string,
+  ): string {
     const fields: Record<string, string> = {
       level: this.escapeValue(level),
       timestamp: this.escapeValue(new Date().toISOString()),
-      message: this.escapeValue(typeof message === 'string' ? message : JSON.stringify(message)),
+      message: this.escapeValue(
+        typeof message === 'string' ? message : JSON.stringify(message),
+      ),
     };
 
     if (context) {
@@ -40,28 +45,23 @@ export class TskvLogger implements LoggerService {
       .join('\t');
   }
 
-  log(message: any, ...optionalParams: any[]) {
-    const [context, stack] = optionalParams;
+  log(message: string | object, context?: string, stack?: string): void {
     console.log(this.formatMessage('log', message, context, stack));
   }
 
-  error(message: any, ...optionalParams: any[]) {
-    const [context, stack] = optionalParams;
+  error(message: string | object, context?: string, stack?: string): void {
     console.error(this.formatMessage('error', message, context, stack));
   }
 
-  warn(message: any, ...optionalParams: any[]) {
-    const [context, stack] = optionalParams;
+  warn(message: string | object, context?: string, stack?: string): void {
     console.warn(this.formatMessage('warn', message, context, stack));
   }
 
-  debug(message: any, ...optionalParams: any[]) {
-    const [context, stack] = optionalParams;
+  debug(message: string | object, context?: string, stack?: string): void {
     console.debug(this.formatMessage('debug', message, context, stack));
   }
 
-  verbose(message: any, ...optionalParams: any[]) {
-    const [context, stack] = optionalParams;
+  verbose(message: string | object, context?: string, stack?: string): void {
     console.log(this.formatMessage('verbose', message, context, stack));
   }
 }

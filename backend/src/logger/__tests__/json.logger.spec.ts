@@ -36,7 +36,12 @@ describe('JsonLogger', () => {
     });
 
     it('should include context and stack when provided', () => {
-      const result = logger.formatMessage('error', 'Error', 'OrderService', 'stack trace');
+      const result = logger.formatMessage(
+        'error',
+        'Error',
+        'OrderService',
+        'stack trace',
+      );
       const parsed = JSON.parse(result);
       expect(parsed.context).toBe('OrderService');
       expect(parsed.stack).toBe('stack trace');

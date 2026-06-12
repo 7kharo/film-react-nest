@@ -30,11 +30,11 @@ services:
     container_name: film_backend
     restart: always
     environment:
-      NODE_ENV: production
-      LOG_FORMAT: json
-      DATABASE_DRIVER: postgres
-      DATABASE_HOST: database
-      DATABASE_PORT: 5432
+      NODE_ENV: ${NODE_ENV}
+      LOG_FORMAT: ${LOG_FORMAT}
+      DATABASE_DRIVER: ${DATABASE_DRIVER}
+      DATABASE_HOST: ${DATABASE_HOST}
+      DATABASE_PORT: ${DATABASE_PORT}
       DATABASE_USERNAME: ${DB_USER}
       DATABASE_PASSWORD: ${DB_PASSWORD}
       DATABASE_NAME: ${DB_NAME}
@@ -49,9 +49,10 @@ services:
   frontend:
     image: 'ghcr.io/${OWNER}/sp16_frontend:latest'
     container_name: film_frontend_builder
+    restart: always
     environment:
-      VITE_API_URL: /api/afisha
-      VITE_CDN_URL: /content/afisha
+      VITE_API_URL: ${VITE_API_URL}
+      VITE_CDN_URL: ${VITE_CDN_URL}
     volumes:
       - frontend_build:/dist
     networks:

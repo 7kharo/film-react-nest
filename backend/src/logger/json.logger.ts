@@ -1,9 +1,22 @@
 import { Injectable, LoggerService } from '@nestjs/common';
 
+interface LogEntry {
+  level: string;
+  timestamp: string;
+  message: string;
+  context?: string;
+  stack?: string;
+}
+
 @Injectable()
 export class JsonLogger implements LoggerService {
-  formatMessage(level: string, message: any, context?: string, stack?: string): string {
-    const logEntry: Record<string, any> = {
+  formatMessage(
+    level: string,
+    message: string | object,
+    context?: string,
+    stack?: string,
+  ): string {
+    const logEntry: LogEntry = {
       level,
       timestamp: new Date().toISOString(),
       message: typeof message === 'string' ? message : JSON.stringify(message),
@@ -19,28 +32,23 @@ export class JsonLogger implements LoggerService {
     return JSON.stringify(logEntry);
   }
 
-  log(message: any, ...optionalParams: any[]) {
-    const [context, stack] = optionalParams;
+  log(message: string | object, context?: string, stack?: string): void {
     console.log(this.formatMessage('log', message, context, stack));
   }
 
-  error(message: any, ...optionalParams: any[]) {
-    const [context, stack] = optionalParams;
+  error(message: string | object, context?: string, stack?: string): void {
     console.error(this.formatMessage('error', message, context, stack));
   }
 
-  warn(message: any, ...optionalParams: any[]) {
-    const [context, stack] = optionalParams;
+  warn(message: string | object, context?: string, stack?: string): void {
     console.warn(this.formatMessage('warn', message, context, stack));
   }
 
-  debug(message: any, ...optionalParams: any[]) {
-    const [context, stack] = optionalParams;
+  debug(message: string | object, context?: string, stack?: string): void {
     console.debug(this.formatMessage('debug', message, context, stack));
   }
 
-  verbose(message: any, ...optionalParams: any[]) {
-    const [context, stack] = optionalParams;
+  verbose(message: string | object, context?: string, stack?: string): void {
     console.log(this.formatMessage('verbose', message, context, stack));
   }
 }

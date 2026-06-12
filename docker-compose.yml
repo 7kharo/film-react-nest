@@ -26,17 +26,16 @@ services:
       retries: 5
 
   backend:
-    image: 'ghcr.io/${OWNER}/sp16_backend:latest'
     build:
       context: ./backend
     container_name: film_backend
     restart: always
     environment:
-      NODE_ENV: production
-      LOG_FORMAT: json
-      DATABASE_DRIVER: postgres
-      DATABASE_HOST: database
-      DATABASE_PORT: 5432
+      NODE_ENV: ${NODE_ENV:-production}
+      LOG_FORMAT: ${LOG_FORMAT:-json}
+      DATABASE_DRIVER: ${DATABASE_DRIVER:-postgres}
+      DATABASE_HOST: ${DATABASE_HOST:-database}
+      DATABASE_PORT: ${DATABASE_PORT:-5432}
       DATABASE_USERNAME: ${DB_USER}
       DATABASE_PASSWORD: ${DB_PASSWORD}
       DATABASE_NAME: ${DB_NAME}
@@ -52,11 +51,12 @@ services:
     build:
       context: ./frontend
       args:
-        VITE_API_URL: /api/afisha
-        VITE_CDN_URL: /content/afisha
+        VITE_API_URL: ${VITE_API_URL:-/api/afisha}
+        VITE_CDN_URL: ${VITE_CDN_URL:-/content/afisha}
     environment:
-      VITE_API_URL: /api/afisha
-      VITE_CDN_URL: /content/afisha
+      VITE_API_URL: ${VITE_API_URL:-/api/afisha}
+      VITE_CDN_URL: ${VITE_CDN_URL:-/content/afisha}
+    restart: always
     volumes:
       - frontend_build:/dist
     networks:
@@ -79,7 +79,6 @@ services:
       - database
 
   server:
-    image: 'ghcr.io/${OWNER}/sp16_server:latest'
     build:
       context: ./nginx
     container_name: film_nginx
